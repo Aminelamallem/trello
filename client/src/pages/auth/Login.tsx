@@ -46,63 +46,85 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex justify-center bg-base-100">
-      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-        <legend className="fieldset-legend">Connexion</legend>
+    // Fond de page blanc
+    <div className="min-h-screen flex items-center justify-center bg-white p-4">
+      {/* Formulaire avec bordure bleue en bas et à droite (effet ombre) */}
+      <div className="bg-[#f5f5f5] w-full max-w-md p-10 border-b-8 border-r-8 border-[#002855] shadow-sm">
+        <h1 className="text-[#002855] text-3xl font-bold mb-12 text-center">
+          Se connecter
+        </h1>
 
-        {error && (
-          <div className="alert alert-error text-sm mb-2">
-            <span>{error}</span>
-          </div>
-        )}
-
-        <label className="label" htmlFor="email">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          type="email"
-          className="input"
-          placeholder="Email"
-          required
-        />
-
-        <label className="label" htmlFor="password">
-          Mot de passe
-        </label>
-        <input
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          type="password"
-          className="input"
-          placeholder="Mot de passe"
-          required
-        />
-
-        <button
-          type="submit"
-          className="btn btn-neutral mt-4"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <span className="loading loading-spinner loading-sm" />
-          ) : (
-            "Se connecter"
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {error && (
+            <div className="bg-red-100 text-red-600 p-3 text-sm border-l-4 border-red-500">
+              {error}
+            </div>
           )}
-        </button>
 
-        <div className="text-center mt-4">
-          <p>Pas de compte ?</p>
-          <Link to="/register" className="link link-hover">
-            S'inscrire
-          </Link>
-        </div>
-      </fieldset>
-    </form>
+          {/* Champ Email */}
+          <div className="relative">
+            <input
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              type="email"
+              placeholder="Email"
+              className="w-full bg-[#d9d9d9] py-4 px-6 text-gray-700 placeholder-gray-500 focus:outline-none border-b-2 border-gray-400 focus:border-[#002855] transition-all"
+              required
+            />
+          </div>
+
+          {/* Champ Mot de passe */}
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              type="password"
+              placeholder="Mot de passe"
+              className="w-full bg-[#d9d9d9] py-4 px-6 text-gray-700 placeholder-gray-500 focus:outline-none border-b-2 border-gray-400 focus:border-[#002855] transition-all"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-[#001a41] text-white py-4 text-xl font-bold mt-4 hover:bg-[#002855] active:scale-[0.98] transition-all disabled:opacity-50"
+            disabled={isLoading}
+          >
+            {isLoading ? "CONNEXION..." : "Se connecter"}
+          </button>
+
+          <div className="text-center space-y-4 mt-4">
+            <p className="text-gray-600 text-lg cursor-pointer hover:underline">
+              Mot de passe oublier?
+            </p>
+
+            <div className="flex items-center justify-center gap-2">
+              <input
+                type="checkbox"
+                className="w-5 h-5 accent-[#001a41]"
+                id="remember"
+              />
+              <label htmlFor="remember" className="text-gray-700">
+                Se souvenir de moi
+              </label>
+            </div>
+
+            <div className="pt-4 border-t border-gray-300">
+              <p className="text-sm text-gray-500">Pas de compte ?</p>
+              <Link
+                to="/register"
+                className="text-[#002855] font-bold hover:underline"
+              >
+                S'inscrire
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

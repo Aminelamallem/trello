@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { ProjectDTO } from "../../types/ProjectDTO";
+
 const API_URL = "http://localhost:3310/api";
+
 export default function Create() {
   const [project, setProject] = useState<ProjectDTO | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -13,6 +15,7 @@ export default function Create() {
     description: "",
     status: "public",
   });
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -51,72 +54,75 @@ export default function Create() {
   }, [project, navigate]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="flex justify-center bg-base-100">
-        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-          <legend className="fieldset-legend">Créer un projet</legend>
+    <div className="min-h-screen flex items-center justify-center bg-[#001a41] p-4">
+      <div className="bg-[#f5f5f5] w-full max-w-md p-10 shadow-2xl">
+        <h1 className="text-[#002855] text-3xl font-bold mb-12 text-center">
+          Créer un projet
+        </h1>
 
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {error && (
-            <div className="alert alert-error text-sm mb-2">
-              <span>{error}</span>
+            <div className="bg-red-100 text-red-600 p-3 text-sm border-l-4 border-red-500">
+              {error}
             </div>
           )}
 
-          <label className="label" htmlFor="name">
-            Nom du projet
-          </label>
+          {/* Champ Nom */}
           <input
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             type="text"
-            className="input"
             placeholder="Nom du projet"
+            className="w-full bg-[#d9d9d9] py-4 px-6 text-gray-700 placeholder-gray-500 focus:outline-none border-b-2 border-gray-400 focus:border-[#002855] transition-all"
             required
           />
 
-          <label className="label" htmlFor="description">
-            Description
-          </label>
+          {/* Champ Description */}
           <input
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             type="text"
-            className="input"
             placeholder="Description du projet"
+            className="w-full bg-[#d9d9d9] py-4 px-6 text-gray-700 placeholder-gray-500 focus:outline-none border-b-2 border-gray-400 focus:border-[#002855] transition-all"
             required
           />
-          <label className="label" htmlFor="status">
-            Statut
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="select select-bordered"
-            required
-          >
-            <option value="public">Public</option>
-            <option value="private">Privé</option>
-          </select>
+
+          {/* Champ Statut */}
+          <div className="relative">
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full bg-[#d9d9d9] py-4 px-6 text-gray-700 focus:outline-none border-b-2 border-gray-400 focus:border-[#002855] appearance-none cursor-pointer"
+              required
+            >
+              <option value="public">Public</option>
+              <option value="private">Privé</option>
+            </select>
+            {/* Petit indicateur visuel pour le select sans SVG */}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-xs">
+              ▼
+            </div>
+          </div>
 
           <button
             type="submit"
-            className="btn btn-neutral mt-4"
+            className="w-full bg-[#001a41] text-white py-4 text-xl font-bold mt-4 hover:bg-[#002855] active:scale-[0.98] transition-all disabled:opacity-50"
             disabled={isLoading}
           >
-            {isLoading ? (
-              <span className="loading loading-spinner loading-sm" />
-            ) : (
-              "Créer le projet"
-            )}
+            {isLoading ? "CHARGEMENT..." : "CRÉER LE PROJET"}
           </button>
-        </fieldset>
-      </form>
-    </>
+
+          <p className="text-center text-gray-500 text-sm mt-4 cursor-pointer hover:underline">
+            Annuler la création ?
+          </p>
+        </form>
+      </div>
+    </div>
   );
 }

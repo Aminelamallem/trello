@@ -2,86 +2,72 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/authContext";
 
 export default function Profile() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   if (loading) {
     return (
-      <div className="flex justify-center mt-10">
-        <span className="loading loading-spinner loading-lg" />
+      <div className="min-h-screen flex items-center justify-center bg-[#001a41]">
+        <div className="w-12 h-12 border-4 border-[#f5f5f5] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center mt-10">
-        <p className="text-error">
-          Vous devez être connecté pour voir cette page.
-        </p>
-        <button
-          type="button"
-          onClick={() => navigate("/login")}
-          className="btn btn-link"
-        >
-          Se connecter
-        </button>
+      <div className="min-h-screen flex items-center justify-center bg-[#001a41] p-4">
+        <div className="bg-[#f5f5f5] w-full max-w-md p-10 shadow-2xl text-center">
+          <p className="text-[#002855] font-bold mb-6 uppercase">
+            Vous devez être connecté pour voir cette page.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            className="w-full bg-[#001a41] text-white py-4 font-bold hover:bg-[#002855] transition-all uppercase"
+          >
+            Se connecter
+          </button>
+        </div>
       </div>
     );
   }
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
-
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-base-200 rounded-box shadow-xl">
-      <h1 className="text-2xl font-bold text-center mb-6">Mon Profil</h1>
+    <div className="min-h-screen flex items-center justify-center bg-[#001a41] p-4">
+      <div className="bg-[#f5f5f5] w-full max-w-md p-10 shadow-2xl">
+        <h1 className="text-[#002855] text-3xl font-bold mb-12 text-center uppercase tracking-tight">
+          Mon Profil
+        </h1>
 
-      <div className="flex flex-col items-center gap-4">
-        <div className="avatar">
-          <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-            <img
-              src={`https://ui-avatars.com/api/?name=${user.username}&background=random`}
-              alt="Avatar"
-            />
-          </div>
-        </div>
-
-        <div className="w-full space-y-3">
-          <div className="flex justify-between border-b border-base-300 pb-2">
-            <span className="font-semibold text-gray-500">ID :</span>
-            <span>{user.uuid}</span>
-          </div>
-          <div className="flex justify-between border-b border-base-300 pb-2">
-            <span className="font-semibold text-gray-500">
-              Nom d'utilisateur :
+        <div className="flex flex-col gap-8">
+          {/* Section Nom d'utilisateur */}
+          <div className="border-b-2 border-[#d9d9d9] pb-2">
+            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Nom d'utilisateur
             </span>
-            <span>{user.username}</span>
+            <span className="text-xl text-[#001a41] font-medium">
+              {user.username}
+            </span>
           </div>
 
-          <div className="flex justify-between border-b border-base-300 pb-2">
-            <span className="font-semibold text-gray-500">Email :</span>
-            <span>{user.email}</span>
+          {/* Section Email */}
+          <div className="border-b-2 border-[#d9d9d9] pb-2">
+            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Adresse Email
+            </span>
+            <span className="text-xl text-[#001a41] font-medium">
+              {user.email}
+            </span>
           </div>
         </div>
 
-        <div className="flex gap-4 mt-6">
+        <div className="flex flex-col gap-4 mt-12">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="btn btn-outline btn-sm"
+            className="w-full border-2 border-[#001a41] text-[#001a41] py-3 font-bold hover:bg-[#001a41] hover:text-white transition-all uppercase text-sm"
           >
             Retour
-          </button>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="btn btn-error btn-sm"
-          >
-            Déconnexion
           </button>
         </div>
       </div>
