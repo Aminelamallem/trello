@@ -1,11 +1,8 @@
 import type { RequestHandler } from "express";
 import { v4 as uuidv4 } from "uuid";
-import type { ColumnDTO } from "../../dto/ColumnDTO";
+import type { TaskDTO } from "../../dto/TaskDTO";
 import type { AuthRequest } from "../../middlewares/verifyToken";
 import { generatePosition } from "../../utils/generatePosition";
-import projectRepository from "../project/projectRepository";
-
-import type { TaskDTO } from "../../dto/TaskDTO";
 import ColumnRepository from "../column/columnRepository";
 import TaskRepository from "./taskRepository";
 
@@ -14,7 +11,7 @@ const columnRepository = new ColumnRepository();
 
 const browseAllByColumnUuid: RequestHandler = async (req, res, next) => {
   try {
-    const { columnUuid } = req.params;
+    const columnUuid = String(req.params.columnUuid); // Correction Type
     if (!columnUuid) {
       res.status(400).json({ message: "Column UUID is required" });
       return;
@@ -33,11 +30,11 @@ const browseAllByColumnUuid: RequestHandler = async (req, res, next) => {
 
 const read: RequestHandler = async (req, res, next) => {
   try {
-    const itemUUID = req.params.uuid;
+    const itemUUID = String(req.params.uuid); // Correction Type
     const item = await taskRepository.findOneByUUId(itemUUID);
 
     if (item == null) {
-      res.json({ message: "Task not found", status: 404 }).status(404);
+      res.status(404).json({ message: "Task not found" });
     } else {
       res.json(item);
     }
@@ -49,10 +46,12 @@ const read: RequestHandler = async (req, res, next) => {
 const add: RequestHandler = async (req: AuthRequest, res, next) => {
   try {
     const { name, description, priority, columnUuid } = req.body;
-    if (!description || !priority) {
+    
+    if (!name || !description || !priority || !columnUuid) {
       res.status(400).json({ message: "All fields are required" });
       return;
     }
+    
     const columnExist = await columnRepository.findOneByUUId(columnUuid);
     if (!columnExist) {
       res.status(404).json({ message: "Column not found" });
@@ -62,7 +61,7 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
     if (priority !== "low" && priority !== "medium" && priority !== "high") {
       res
         .status(400)
-        .json({ message: "Le priority doit être 'low', 'medium' ou 'high'" });
+        .json({ message: "La priorité doit être 'low', 'medium' ou 'high'" });
       return;
     }
 
@@ -82,6 +81,7 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
       columnUuid,
       userUuid: user.userUuid,
     };
+    
     const result = await taskRepository.create(newTask);
     res.status(201).json({ message: "Task created", taskId: result.insertId });
   } catch (err) {
@@ -90,9 +90,10 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
 };
 
 const destroy: RequestHandler = async (req: AuthRequest, res, next) => {
-  const taskUUID = req.params.uuid;
   try {
+    const taskUUID = String(req.params.uuid); // Correction Type
     const user = req.user;
+    
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
       return;
@@ -112,10 +113,10 @@ const destroy: RequestHandler = async (req: AuthRequest, res, next) => {
 };
 
 const edit: RequestHandler = async (req: AuthRequest, res, next) => {
-  const taskUUID = req.params.uuid;
-  const { name, description, priority, position, isCompleted, columnUuid } =
-    req.body;
   try {
+    const taskUUID = String(req.params.uuid); // Correction Type
+    const { name, description, priority, position, isCompleted, columnUuid } = req.body;
+    
     const user = req.user;
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
@@ -130,17 +131,17 @@ const edit: RequestHandler = async (req: AuthRequest, res, next) => {
 
     const result = await taskRepository.update(taskUUID, {
       uuid: taskUUID,
-      name,
-      description,
-      priority,
-      position,
-      isCompleted,
-      columnUuid,
+      name: name ?? task.name,
+      description: description ?? task.description,
+      priority: priority ?? task.priority,
+      position: position ?? task.position,
+      isCompleted: isCompleted ?? task.isCompleted,
+      columnUuid: columnUuid ?? task.columnUuid,
       userUuid: user.userUuid,
     });
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ message: "Update failed" });
       return;
     }
 

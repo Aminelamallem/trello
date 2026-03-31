@@ -33,7 +33,7 @@ const browseByUser: RequestHandler = async (req: AuthRequest, res, next) => {
 const read: RequestHandler = async (req: AuthRequest, res, next) => {
   try {
     const user = req.user;
-    const projectUUID = req.params.uuid;
+    const projectUUID = String(req.params.uuid); // Correction ici
 
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
@@ -51,7 +51,7 @@ const read: RequestHandler = async (req: AuthRequest, res, next) => {
       res.status(403).json({ message: "Accès interdit" });
       return;
     }
-    console.log(project.status, user.userUuid, project.createdBy);
+    
     res.json(project);
   } catch (err) {
     next(err);
@@ -60,16 +60,24 @@ const read: RequestHandler = async (req: AuthRequest, res, next) => {
 
 const destroy: RequestHandler = async (req: AuthRequest, res, next) => {
   try {
-    const projectUUID = req.params.uuid;
+    const projectUUID = String(req.params.uuid); // Correction ici
     const project = await projectRepository.findOneByUUId(projectUUID);
-    if (!project || project.createdBy !== req.user?.userUuid) {
+    
+    if (!project) {
+      res.status(404).json({ message: "Projet non trouvé" });
+      return;
+    }
+
+    if (project.createdBy !== req.user?.userUuid) {
       res.status(403).json({ message: "Accès interdit" });
       return;
     }
+
     const result = await projectRepository.delete(projectUUID);
 
     if (result.affectedRows === 0) {
       res.status(404).json({ message: "Projet non trouvé" });
+      return;
     }
 
     res.json({ message: "projet supprimé avec succès" });
@@ -104,7 +112,7 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
     };
     const result = await projectRepository.create(newProject);
     res.status(201).json({
-      message: "Project crée  avec succés!",
+      message: "Project crée avec succés!",
       userUuid: result.insertId,
     });
   } catch (err) {
@@ -114,10 +122,16 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
 
 const edit: RequestHandler = async (req: AuthRequest, res, next) => {
   const { name, description, status } = req.body;
-  const projectUUID = req.params.uuid;
+  const projectUUID = String(req.params.uuid); // Correction ici
   try {
     const project = await projectRepository.findOneByUUId(projectUUID);
     const user = req.user;
+
+    if (!project) {
+      res.status(404).json({ message: "Projet non trouvé" });
+      return;
+    }
+
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
       return;
@@ -137,7 +151,7 @@ const edit: RequestHandler = async (req: AuthRequest, res, next) => {
     });
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ message: "Projet non trouvé" });
+      res.status(404).json({ message: "Erreur lors de la mise à jour" });
       return;
     }
 

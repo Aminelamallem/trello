@@ -1,4 +1,10 @@
-CREATE TABLE Users (
+-- Suppression et recréation de la base de données
+DROP DATABASE IF EXISTS task_manager;
+CREATE DATABASE task_manager;
+USE task_manager;
+
+-- Table des Utilisateurs
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(36) NOT NULL UNIQUE,
     username VARCHAR(36) UNIQUE NOT NULL,
@@ -9,7 +15,8 @@ CREATE TABLE Users (
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-CREATE TABLE Projects (
+-- Table des Projets
+CREATE TABLE projects (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(36) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -18,11 +25,12 @@ CREATE TABLE Projects (
     createdBy VARCHAR(36) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (createdBy) REFERENCES Users(uuid) ON DELETE CASCADE
+    -- Correction : Users -> users
+    CONSTRAINT fk_projects_user FOREIGN KEY (createdBy) REFERENCES users(uuid) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE `ProjectColumns` (
+-- Table des Colonnes
+CREATE TABLE projectColumns (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(36) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -30,11 +38,12 @@ CREATE TABLE `ProjectColumns` (
     projectId VARCHAR(36) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (projectId) REFERENCES Projects(uuid) ON DELETE CASCADE
+    -- Correction : Projects -> projects
+    CONSTRAINT fk_columns_project FOREIGN KEY (projectId) REFERENCES projects(uuid) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE Tasks (
+-- Table des Tâches
+CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(36) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -46,7 +55,7 @@ CREATE TABLE Tasks (
     columnId VARCHAR(36) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (userId) REFERENCES Users(uuid) ON DELETE SET NULL,
-    FOREIGN KEY (columnId) REFERENCES `ProjectColumns`(uuid) ON DELETE CASCADE
+    -- Correction : Users -> users / ProjectColumns -> projectColumns
+    CONSTRAINT fk_tasks_user FOREIGN KEY (userId) REFERENCES users(uuid) ON DELETE SET NULL,
+    CONSTRAINT fk_tasks_column FOREIGN KEY (columnId) REFERENCES projectColumns(uuid) ON DELETE CASCADE
 ) ENGINE=InnoDB;

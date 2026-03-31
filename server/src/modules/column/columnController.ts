@@ -11,7 +11,7 @@ const projectRepo = new projectRepository();
 
 const browseAllByProjectUuid: RequestHandler = async (req, res, next) => {
   try {
-    const { projectUuid } = req.params;
+    const projectUuid = String(req.params.projectUuid);
     if (!projectUuid) {
       res.status(400).json({ message: "Project UUID is required" });
       return;
@@ -30,11 +30,11 @@ const browseAllByProjectUuid: RequestHandler = async (req, res, next) => {
 
 const read: RequestHandler = async (req, res, next) => {
   try {
-    const itemUUID = req.params.uuid;
+    const itemUUID = String(req.params.uuid);
     const item = await columnRepository.findOneByUUId(itemUUID);
 
     if (item == null) {
-      res.json({ message: "Column not found", status: 404 }).status(404);
+      res.status(404).json({ message: "Column not found" });
     } else {
       res.json(item);
     }
@@ -72,9 +72,16 @@ const add: RequestHandler = async (req: AuthRequest, res, next) => {
 
 const edit: RequestHandler = async (req: AuthRequest, res, next) => {
   const { name } = req.body;
-  const columnUUID = req.params.uuid;
+  const columnUUID = String(req.params.uuid);
   try {
     const column = await columnRepository.findOneByUUId(columnUUID);
+    
+    // Sécurité : on vérifie si la colonne existe avant d'accéder à ses propriétés
+    if (!column) {
+      res.status(404).json({ message: "Colonne non trouvée" });
+      return;
+    }
+
     const user = req.user;
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
@@ -89,7 +96,7 @@ const edit: RequestHandler = async (req: AuthRequest, res, next) => {
     });
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ message: "Colonne non trouvée" });
+      res.status(404).json({ message: "Erreur lors de la mise à jour" });
       return;
     }
 
@@ -100,7 +107,7 @@ const edit: RequestHandler = async (req: AuthRequest, res, next) => {
 };
 
 const destroy: RequestHandler = async (req: AuthRequest, res, next) => {
-  const columnUUID = req.params.uuid;
+  const columnUUID = String(req.params.uuid);
   try {
     const user = req.user;
     if (!user) {

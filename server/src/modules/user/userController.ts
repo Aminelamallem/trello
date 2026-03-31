@@ -17,11 +17,11 @@ const browse: RequestHandler = async (req, res, next) => {
 
 const read: RequestHandler = async (req, res, next) => {
   try {
-    const itemUUID = req.params.uuid;
+    const itemUUID = String(req.params.uuid); // Correction UUID
     const item = await repo.findOneByUUId(itemUUID);
 
     if (item == null) {
-      res.json({ message: "User not found", status: 404 });
+      res.status(404).json({ message: "User not found", status: 404 });
     } else {
       res.json(item);
     }
@@ -32,7 +32,7 @@ const read: RequestHandler = async (req, res, next) => {
 
 const destroy: RequestHandler = async (req, res, next) => {
   try {
-    const itemUUID = req.params.uuid;
+    const itemUUID = String(req.params.uuid); // Correction UUID
     const result = await repo.delete(itemUUID);
 
     if (result.affectedRows === 0) {
@@ -47,9 +47,9 @@ const destroy: RequestHandler = async (req, res, next) => {
 
 const edit: RequestHandler = async (req: AuthRequest, res, next) => {
   const { email, username, password } = req.body;
-  const itemUUID = req.params.uuid;
+  const itemUUID = String(req.params.uuid); // Correction UUID
   try {
-    if (req.user?.userUuid !== req.params.uuid) {
+    if (req.user?.userUuid !== itemUUID) {
       res.status(403).json({ message: "Accès interdit" });
       return;
     }
