@@ -3,7 +3,10 @@ import app from "../../src/app";
 import databaseClient from "../../database/client";
 import type { Result, Rows } from "../../database/client";
 import jwt from "jsonwebtoken";
-
+import projectActions from "../../src/modules/project/projectController";
+import ProjectRepository from "../../src/modules/project/projectRepository";
+import type { ProjectDTO } from "../../src/dto/ProjectDTO";
+import type { IProject } from "../../src/interfaces/IProject";
 // Configuration du secret pour les tests
 const JWT_SECRET = "testsecret";
 process.env.JWT_SECRET = JWT_SECRET;
@@ -97,3 +100,7 @@ describe("POST /api/projects", () => {
     expect(response.body.message).toBe("Tous les champs ne sont pas remplis");
   });
 });
+
+
+// unit test
+
